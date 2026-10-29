@@ -29,8 +29,14 @@ modules:
     files:
       - source: plymouth
         destination: /
+      - source: gdm
+        destination: /
+
+  # compile the dconf database so GDM sees the new key
+  - type: script
+    snippets:
+      - dconf update
 
   # Rebuild initramfs so Plymouth picks up the new watermark
   - type: initramfs
-
   - type: signing   # keep last: sets up image signature verification
