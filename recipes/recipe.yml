@@ -23,20 +23,29 @@ modules:
     system:
       enabled:
         - tailscaled.service
+      masked:
+        # Refreshes the GNOME Software app catalog; held up graphical.target by ~14 s
+        - fedora-atomic-desktop-appstream-cache-refresh.service
 
-  # Copies files/plymouth/* into / (see layout below)
+  # Copies files/<source>/* into / (plymouth logo, GDM login logo, dracut config)
   - type: files
     files:
       - source: plymouth
         destination: /
       - source: gdm
         destination: /
+      - source: dracut
+        destination: /
 
-  # compile the dconf database so GDM sees the new key
   - type: script
     snippets:
+      # compile the dconf database so GDM sees the new key
       - dconf update
+      # the base image force-loads nvidia/amdgpu into the initramfs (383 MB);
+      # remove it so files/dracut/.../99-slim.conf is the only driver config
+      - rm -f /usr/lib/dracut/dracut.conf.d/99-nvidia.conf
 
-  # Rebuild initramfs so Plymouth picks up the new watermark
+  # Rebuild initramfs: picks up the Plymouth watermark and the slim dracut config.
+  # Must stay after the files and script modules above.
   - type: initramfs
   - type: signing   # keep last: sets up image signature verification
