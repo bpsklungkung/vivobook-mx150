@@ -17,6 +17,9 @@ modules:
         - chromium
         - fish
         - gh
+        - tesseract
+        - tesseract-langpack-ind
+        - poppler-utils
         - freerdp        # provides /usr/bin/xfreerdp
 
   - type: systemd
